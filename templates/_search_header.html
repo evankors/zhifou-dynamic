@@ -1,0 +1,98 @@
+<style>
+.global-nav-search {
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #eceff3;
+}
+
+.global-nav-search .inner {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.global-nav-search .logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 18px;
+    text-decoration: none;
+    color: #1f2937;
+    border: 1px solid #d8dde6;
+    background: #fff;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+
+.global-nav-search form {
+    display: flex;
+    flex: 1;
+    background: #fff;
+    border: 1px solid #d8dde6;
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.global-nav-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 10px 14px;
+    background: transparent;
+}
+
+.global-nav-search button {
+    border: none;
+    background: #3dbb7f;
+    color: #fff;
+    padding: 0 18px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.global-nav-search .user-info {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #444;
+}
+
+.global-nav-search .user-info a {
+    text-decoration: none;
+    color: #2f9f6f;
+}
+</style>
+
+<div class="global-nav-search">
+    <div class="inner">
+        <a class="logo" href="/">知否</a>
+        <form method="get" action="/">
+            <input name="q" value="{{ request.args.get('q', '') }}" placeholder="搜索：理论 / 实验 / 老师 / 学院 / 论文">
+            <button type="submit">搜索</button>
+        </form>
+        {% if session.get('teacher_id') %}
+        <div class="user-info">
+            <span>{{ session.get('teacher_name') or session.get('teacher_phone') }}</span>
+            <a href="/teacher-profile">个人信息</a>
+            <a href="/teacher-center">消息</a>
+        </div>
+        {% elif session.get('user_phone') %}
+        <div class="user-info">
+            <span>{{ session.get('user_name') or session.get('user_phone') }}{% if session.get('user_major') %}（{{ session.get('user_major') }}）{% endif %}</span>
+            <a href="/profile">个人信息</a>
+        </div>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>选择专业｜问老师</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, Arial;
+            background: #f5f6f7;
+        }
+
+        .container {
+            width: 1100px;
+            margin: 40px auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* 学科网格 */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .subject-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .subject-card:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,.08);
+            transform: translateY(-2px);
+        }
+
+        .subject-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .subject-name {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .subject-desc {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+{% include "_search_header.html" %}
+
+<div class="container">
+    <h1>问老师</h1>
+    <div class="subtitle">请选择你的硕士专业方向</div>
+
+    <div class="subject-grid">
+        {% for m in majors %}
+        <a class="subject-card" href="/ask-teacher/{{ m['slug'] }}" style="text-decoration:none;color:inherit;">
+            <div class="subject-icon">{{ m['icon'] }}</div>
+            <div class="subject-name">{{ m['name'] }}</div>
+            <div class="subject-desc">{{ m['desc'] }}</div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>

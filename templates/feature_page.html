@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page.title }}｜知否</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, Arial;
+            background: #f5f6f7;
+            color: #333;
+        }
+
+        .container {
+            width: 900px;
+            margin: 80px auto;
+            background: #fff;
+            border-radius: 10px;
+            padding: 36px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .desc {
+            margin-top: 22px;
+            line-height: 1.8;
+        }
+
+        .actions {
+            margin-top: 28px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 1px solid #3dbb7f;
+            color: #3dbb7f;
+            font-size: 14px;
+        }
+
+        .btn.primary {
+            background: #3dbb7f;
+            color: #fff;
+        }
+
+        .section-title {
+            margin-top: 28px;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .theory-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .theory-item {
+            border: 1px solid #e6e9ef;
+            border-radius: 8px;
+            background: #fafbfc;
+            padding: 14px 16px;
+        }
+
+        .theory-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .theory-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        .theory-tags {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .theory-tag {
+            font-size: 12px;
+            color: #2f9f6f;
+            background: #eaf6f1;
+            border-radius: 14px;
+            padding: 4px 10px;
+        }
+    </style>
+</head>
+<body>
+{% include "_search_header.html" %}
+
+<div class="container">
+    <h1>{{ page.title }}</h1>
+    <div class="subtitle">{{ page.subtitle }}</div>
+    <div class="desc">{{ page.description }}</div>
+
+    {% if page.theories %}
+    <h2 class="section-title">理论介绍</h2>
+    <div class="theory-list">
+        {% for theory in page.theories %}
+        <div class="theory-item">
+            <div class="theory-name">{{ theory.name }}</div>
+            <div class="theory-text">{{ theory.summary }}</div>
+            <div class="theory-tags">
+                {% for kw in theory.keywords %}
+                <span class="theory-tag">{{ kw }}</span>
+                {% endfor %}
+            </div>
+            <div class="theory-text" style="margin-top:10px;"><strong>典型应用：</strong>{{ theory.scenario }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="actions">
+        <a class="btn primary" href="/ask-subject">去问老师</a>
+        <a class="btn" href="/">返回首页</a>
+    </div>
+</div>
+
+</body>
+</html>

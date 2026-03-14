@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>老师详情｜知否</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, Arial;
+            background: #f5f6f7;
+            color: #333;
+        }
+
+        .container {
+            width: 900px;
+            margin: 30px auto 120px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .avatar-wrap {
+            position: relative;
+            width: 88px;
+            height: 88px;
+        }
+
+        .avatar-wrap img {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e5e7eb;
+        }
+
+        .badge {
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+            background: #3dbb7f;
+            color: #fff;
+            font-size: 12px;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+        }
+
+        .name {
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .title {
+            margin-top: 6px;
+            color: #666;
+        }
+
+        .price {
+            color: #ff5a5f;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-top: 26px;
+        }
+
+        .ask-bar {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #3fd29a, #2bb673);
+            padding: 16px 0;
+        }
+
+        .ask-btn {
+            width: 300px;
+            margin: 0 auto;
+            background: #fff;
+            color: #2bb673;
+            border-radius: 28px;
+            text-align: center;
+            font-size: 16px;
+            padding: 12px 0;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+{% include "_search_header.html" %}
+
+<div class="container">
+    <div class="header">
+        <div style="display:flex;gap:16px;align-items:center;">
+            <div class="avatar-wrap">
+                <img src="{{ url_for('static', filename=teacher['avatar_path'] or 'avatars/teacher.png') }}" alt="头像">
+                {% if teacher['is_verified'] %}
+                <div class="badge">V</div>
+                {% endif %}
+            </div>
+            <div>
+                <div class="name">{{ teacher['name'] }}</div>
+                <div class="title">{{ teacher['school'] }} · {{ teacher['title'] }}</div>
+                <div class="title">{{ teacher['major'] }}</div>
+            </div>
+        </div>
+        <div class="price">¥{{ teacher['price'] }}</div>
+    </div>
+
+    <div class="section">
+        <strong>审核状态：</strong>{{ teacher['status'] }}
+    </div>
+</div>
+
+<div class="ask-bar">
+    <a class="ask-btn" href="/ask?teacher_id={{ teacher['id'] }}">向老师提问 ￥{{ teacher['price'] }}</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>个人信息｜知否</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, Arial;
+            background: #f5f6f7;
+            color: #222;
+        }
+
+        .container {
+            width: 720px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 10px;
+            padding: 28px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        }
+
+        h1 {
+            margin: 0 0 16px;
+            font-size: 24px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .input {
+            width: 100%;
+            border: 1px solid #e1e5eb;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .actions {
+            margin-top: 16px;
+            text-align: right;
+        }
+
+        .save-btn {
+            background: linear-gradient(90deg, #3fd29a, #2bb673);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+{% include "_search_header.html" %}
+
+<div class="container">
+    <h1>个人信息</h1>
+    {% if saved %}<div style="color:#2f9f6f;font-size:13px;margin-bottom:10px;">已保存</div>{% endif %}
+    <form method="post" action="/profile">
+        <div class="row"><span>手机号</span><span>{{ user['phone'] }}</span></div>
+        <div class="row"><span>姓名</span><input class="input" name="name" value="{{ user['name'] or '' }}" placeholder="填写姓名"></div>
+        <div class="row"><span>专业方向</span><input class="input" name="major" value="{{ user['major'] or '' }}" placeholder="如：组织行为/教育学"></div>
+        <div class="row"><span>学校</span><input class="input" name="school" value="{{ user['school'] or '' }}" placeholder="学校名称"></div>
+        <div class="row"><span>学历层次</span><input class="input" name="degree" value="{{ user['degree'] or '' }}" placeholder="本科/硕士/博士"></div>
+        <div class="row"><span>年级</span><input class="input" name="grade" value="{{ user['grade'] or '' }}" placeholder="如：研一/大三"></div>
+        <div class="row"><span>邮箱</span><input class="input" name="email" value="{{ user['email'] or '' }}" placeholder="常用邮箱"></div>
+        <div class="row"><span>注册时间</span><span>{{ created_at }}</span></div>
+        <div class="actions"><button class="save-btn" type="submit">保存</button></div>
+    </form>
+</div>
+</body>
+</html>

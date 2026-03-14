@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>确认支付｜问老师</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Arial;
+    background: #f5f6f7;
+    color: #333;
+}
+
+.container {
+    width: 720px;
+    margin: 20px auto 140px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+
+.question-text {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.question-images {
+    font-size: 13px;
+    color: #999;
+}
+
+.teacher {
+    display: flex;
+    align-items: center;
+}
+
+.teacher img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    margin-right: 14px;
+}
+
+.teacher-name {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.teacher-price {
+    margin-left: auto;
+    font-size: 16px;
+    color: #ff5a5f;
+}
+
+.option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.option:last-child {
+    border-bottom: none;
+}
+
+.option-desc {
+    color: #999;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.pay-bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 14px 0;
+}
+
+.pay-inner {
+    width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.pay-inner form {
+    margin-left: auto;
+    display: flex;
+}
+
+.total {
+    font-size: 16px;
+}
+
+.total strong {
+    color: #ff5a5f;
+    font-size: 20px;
+    margin-left: 6px;
+}
+
+.pay-btn {
+    background: linear-gradient(135deg, #3fd29a, #2bb673);
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+}
+</style>
+</head>
+
+<body>
+{% include "_search_header.html" %}
+
+<div class="container">
+    <div class="card">
+        <div class="question-text">{{ order.question }}</div>
+        <div class="question-images">
+            {% if order.image_name %}
+                已上传图片：{{ order.image_name }}
+            {% else %}
+                未上传图片
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="teacher">
+            <img src="{{ url_for('static', filename=teacher.avatar) }}" alt="{{ teacher.name }}">
+            <div>
+                <div class="teacher-name">{{ teacher.name }} 教授</div>
+                <div style="font-size:13px;color:#999;">{{ teacher.major }} · {{ teacher.school }}</div>
+            </div>
+            <div class="teacher-price">¥{{ teacher.price }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="option">
+            <div>
+                优惠方式
+                <div class="option-desc">暂无可用优惠</div>
+            </div>
+            <div>›</div>
+        </div>
+
+        <div class="option">
+            <div>
+                权益保障
+                <div class="option-desc">预计 3 小时内回复，超过 24 小时自动退款</div>
+            </div>
+        </div>
+
+        <div class="option">
+            <div>订单状态</div>
+            <div>{{ order.status }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="pay-bar">
+    <div class="pay-inner">
+        <div class="total">费用合计 <strong>¥{{ teacher.price }}</strong></div>
+        <form method="post" action="{{ url_for('pay') }}">
+            <input type="hidden" name="order_id" value="{{ order.id }}">
+            <button class="pay-btn" type="submit">立即支付</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <style>
+        body {
+            background: #f5f6f7;
+            font-family: -apple-system, BlinkMacSystemFont, Arial;
+        }
+
+        .container {
+            width: 420px;
+            margin: 80px auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .msg {
+            color: #d33;
+            font-size: 13px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .input {
+            width: 100%;
+            height: 38px;
+            padding: 0 44px 0 18px;
+            border-radius: 25px;
+            border: none;
+            background: #f2f3f5;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .code-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .code-box input {
+            flex: 1;
+        }
+
+        .code-box button {
+            width: 90px;
+            height: 38px;
+            padding: 0;
+            border-radius: 25px;
+            border: none;
+            background: #e5e6eb;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .password-box {
+            position: relative;
+            margin-top: 15px;
+        }
+
+        .password-box span {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            user-select: none;
+            color: #666;
+        }
+
+        .agree {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .agree input {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+
+        .agree a {
+            color: #6c5ce7;
+            text-decoration: none;
+        }
+
+        .submit {
+            width: 100%;
+            margin-top: 25px;
+            padding: 12px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(90deg, #7b6cff, #9b7cff);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-link {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #6c5ce7;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>注册</h2>
+    {% if message %}<div class="msg">{{ message }}</div>{% endif %}
+
+    <form method="post" action="{{ url_for('register') }}">
+        <input class="input" type="text" name="name" placeholder="姓名（可选）">
+        <div style="height:10px;"></div>
+        <input class="input" type="text" name="major" placeholder="专业方向（可选）">
+        <div style="height:10px;"></div>
+        <input class="input" id="regPhone" type="text" name="phone" placeholder="手机" required>
+
+        <div class="code-box">
+            <input class="input" id="regCode" type="text" name="code" placeholder="验证码" required>
+            <button id="regSendBtn" type="button">获取验证码</button>
+        </div>
+        <div class="msg" id="regStatus"></div>
+
+        <div class="password-box">
+            <input class="input" id="password" type="password" name="password" placeholder="密码（可选）">
+            <span onclick="togglePassword()">👁</span>
+        </div>
+
+        <div class="agree">
+            <input type="checkbox" required>
+            <span>
+                我已阅读并接受
+                <a href="#">《用户协议》</a>
+                <a href="#">《隐私政策》</a>
+            </span>
+        </div>
+
+        <button type="submit" class="submit">注册</button>
+    </form>
+
+    <div class="login-link">
+        已有账号？<a href="{{ url_for('login') }}">马上登录</a>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const input = document.getElementById('password');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+document.getElementById("regSendBtn").addEventListener("click", async () => {
+    const phone = document.getElementById("regPhone").value.trim();
+    const status = document.getElementById("regStatus");
+    if (!phone) {
+        status.textContent = "请先填写手机号";
+        return;
+    }
+    status.textContent = "发送中...";
+    try {
+        const form = new URLSearchParams();
+        form.set("phone", phone);
+        form.set("purpose", "register");
+        const res = await fetch("/send-code", { method: "POST", body: form });
+        const data = await res.json();
+        if (data.ok) {
+            status.textContent = `演示验证码：${data.code}（10分钟有效）`;
+        } else {
+            status.textContent = data.message || "发送失败";
+        }
+    } catch (e) {
+        status.textContent = "发送失败，请检查服务";
+    }
+});
+</script>
+
+</body>
+</html>

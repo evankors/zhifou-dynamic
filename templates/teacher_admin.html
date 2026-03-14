@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>老师审核｜知否</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "IBM Plex Sans", "Avenir Next", "Helvetica Neue", sans-serif;
+            background: radial-gradient(circle at top, #f9fafb, #eef2f7 45%, #f5f6f7 100%);
+            color: #1f2937;
+        }
+
+        .page {
+            width: 1040px;
+            margin: 36px auto 60px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 8px 24px rgba(31, 41, 55, 0.06);
+            border: 1px solid #eef0f4;
+            margin-bottom: 18px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .count {
+            font-size: 12px;
+            color: #4b5563;
+            background: #f3f4f6;
+            border-radius: 999px;
+            padding: 4px 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        th {
+            font-size: 12px;
+            letter-spacing: .5px;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+
+        tbody tr:hover {
+            background: #fafbff;
+        }
+
+        .status {
+            font-weight: 600;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            display: inline-block;
+        }
+
+        .status.pending { background: #fff7ed; color: #c2410c; }
+        .status.approved { background: #ecfdf3; color: #15803d; }
+        .status.rejected { background: #fef2f2; color: #b91c1c; }
+
+        .btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .approve { background: #3dbb7f; color: #fff; }
+        .reject { background: #ef4444; color: #fff; }
+    </style>
+</head>
+<body>
+{% include "_search_header.html" %}
+
+<div class="page">
+    <div class="page-header">
+        <div>
+            <div class="page-title">老师注册审核</div>
+            <div class="page-subtitle">仅展示审核结果与状态，不含订单指派</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">待审核</div>
+            <div class="count">共 {{ pending_teachers|length }} 条</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>学校</th>
+                    <th>职称</th>
+                    <th>方向</th>
+                    <th>价格</th>
+                    <th>手机号</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if not pending_teachers %}
+                <tr><td colspan="8">暂无待审核老师</td></tr>
+            {% endif %}
+            {% for t in pending_teachers %}
+                <tr>
+                    <td>{{ t['name'] }}</td>
+                    <td>{{ t['school'] }}</td>
+                    <td>{{ t['title'] }}</td>
+                    <td>{{ t['major'] }}</td>
+                    <td>¥{{ t['price'] }}</td>
+                    <td>{{ t['phone'] }}</td>
+                    <td><span class="status pending">{{ t['status'] }}</span></td>
+                    <td>
+                        <form method="post" action="/teacher-admin/approve/{{ t['id'] }}" style="display:inline;">
+                            <button class="btn approve" type="submit">通过</button>
+                        </form>
+                        <form method="post" action="/teacher-admin/reject/{{ t['id'] }}" style="display:inline;">
+                            <button class="btn reject" type="submit">拒绝</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">已通过</div>
+            <div class="count">共 {{ approved_teachers|length }} 条</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>学校</th>
+                    <th>职称</th>
+                    <th>方向</th>
+                    <th>价格</th>
+                    <th>手机号</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if not approved_teachers %}
+                <tr><td colspan="7">暂无已通过老师</td></tr>
+            {% endif %}
+            {% for t in approved_teachers %}
+                <tr>
+                    <td>{{ t['name'] }}</td>
+                    <td>{{ t['school'] }}</td>
+                    <td>{{ t['title'] }}</td>
+                    <td>{{ t['major'] }}</td>
+                    <td>¥{{ t['price'] }}</td>
+                    <td>{{ t['phone'] }}</td>
+                    <td><span class="status approved">{{ t['status'] }}</span></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-title">已拒绝</div>
+            <div class="count">共 {{ rejected_teachers|length }} 条</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>学校</th>
+                    <th>职称</th>
+                    <th>方向</th>
+                    <th>价格</th>
+                    <th>手机号</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if not rejected_teachers %}
+                <tr><td colspan="7">暂无已拒绝老师</td></tr>
+            {% endif %}
+            {% for t in rejected_teachers %}
+                <tr>
+                    <td>{{ t['name'] }}</td>
+                    <td>{{ t['school'] }}</td>
+                    <td>{{ t['title'] }}</td>
+                    <td>{{ t['major'] }}</td>
+                    <td>¥{{ t['price'] }}</td>
+                    <td>{{ t['phone'] }}</td>
+                    <td><span class="status rejected">{{ t['status'] }}</span></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

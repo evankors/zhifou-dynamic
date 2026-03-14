@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>老师入口｜知否</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "IBM Plex Sans", "Avenir Next", "Helvetica Neue", sans-serif;
+            background: radial-gradient(1200px 600px at 10% -10%, #eef2ff, #f5f6f7 60%);
+            color: #1f2937;
+        }
+
+        .page {
+            width: 1040px;
+            margin: 36px auto 60px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px 22px;
+            border: 1px solid #eef2f7;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .status {
+            font-weight: 600;
+        }
+
+        .chat-link {
+            color: #2f9f6f;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .teacher-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding: 12px;
+            border: 1px solid #eef0f4;
+            border-radius: 10px;
+            background: #fafbff;
+        }
+
+        .avatar-wrap {
+            position: relative;
+            width: 56px;
+            height: 56px;
+        }
+
+        .avatar-wrap img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e5e7eb;
+        }
+
+        .badge {
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+            background: #3dbb7f;
+            color: #fff;
+            font-size: 12px;
+            width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+<body>
+{% include "_search_header.html" %}
+
+<div class="page">
+  <div class="panel">
+    <div class="teacher-card">
+        <div class="avatar-wrap">
+            <img src="{{ url_for('static', filename=teacher['avatar_path'] or 'avatars/teacher.png') }}" alt="头像">
+            {% if teacher['is_verified'] %}
+            <div class="badge">V</div>
+            {% endif %}
+        </div>
+        <div>
+            <div style="font-weight:600;">{{ teacher['name'] }}</div>
+            <div style="font-size:13px;color:#666;">{{ teacher['school'] }} · {{ teacher['title'] }} · {{ teacher['major'] }}</div>
+        </div>
+    </div>
+    <h1>老师消息（学生提问列表）</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>提问</th>
+                <th>学生手机号</th>
+                <th>状态</th>
+                <th>时间</th>
+                <th>消息</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if not orders %}
+            <tr><td colspan="5">暂无指派给你的提问</td></tr>
+        {% endif %}
+        {% for o in orders %}
+            <tr>
+                <td>{{ o['question'] }}</td>
+                <td>{{ o['user_phone'] or '未登录' }}</td>
+                <td class="status">{{ o['status'] }}</td>
+                <td>{{ o['created_at'] }}</td>
+                <td><a class="chat-link" href="/chat?order_id={{ o['id'] }}">进入</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

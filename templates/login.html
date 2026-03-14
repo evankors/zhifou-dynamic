@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 知否</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f6f8fa; }
+        .text-zf-purple { color: #7d57ff; }
+        .bg-zf-purple { background-color: #7d57ff; }
+        .input-bg { background-color: #f0f2f5; }
+        .hidden-form { display: none; }
+        .active-tab { color: #1f2937; border-bottom: 4px solid #7d57ff; font-weight: bold; }
+        .inactive-tab { color: #9ca3af; border-bottom: 4px solid transparent; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div class="p-8 px-12">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-zf-purple rounded-lg flex items-center justify-center text-white font-bold text-lg">知</div>
+            <span class="text-2xl font-bold text-gray-700 tracking-wider">知否</span>
+        </div>
+    </div>
+
+    <main class="flex-grow flex items-center justify-center px-4 pb-20">
+        <div class="bg-white w-full max-w-5xl rounded-3xl shadow-xl flex overflow-hidden" style="min-height: 580px;">
+            <div class="hidden md:flex flex-1 bg-gray-50 items-center justify-center p-6 relative border-r border-gray-50">
+                <div class="relative">
+                    <img src="{{ url_for('static', filename='iphone_mockup.jpg') }}" class="max-h-[480px] drop-shadow-2xl" alt="mockup">
+                </div>
+            </div>
+
+            <div class="w-full md:w-[450px] p-12 flex flex-col">
+                <div class="flex space-x-8 mb-10">
+                    <button id="sms-tab" onclick="switchTab('sms')" class="text-lg pb-1 active-tab" type="button">短信登录</button>
+                    <button id="pwd-tab" onclick="switchTab('pwd')" class="text-lg pb-1 inactive-tab" type="button">密码登录</button>
+                </div>
+
+                {% if message %}
+                <div class="text-red-500 text-sm mb-4">{{ message }}</div>
+                {% endif %}
+
+                <form action="{{ url_for('login') }}" method="POST" class="space-y-5">
+                    <div id="pwd-fields" class="space-y-5 hidden-form">
+                        <input type="text" name="username" placeholder="用户名/手机号/邮箱（当前用手机号登录）" class="w-full input-bg border-none rounded-xl p-4 outline-none">
+                        <input type="password" name="password" placeholder="密码" class="w-full input-bg border-none rounded-xl p-4 outline-none">
+                    </div>
+
+                    <div id="sms-fields" class="space-y-5">
+                        <input id="loginPhone" type="text" name="phone" placeholder="请输入手机号" class="w-full input-bg border-none rounded-xl p-4 outline-none">
+                        <div class="relative">
+                            <input id="loginCode" type="text" name="code" placeholder="验证码" class="w-full input-bg border-none rounded-xl p-4 outline-none">
+                            <button id="loginSendBtn" type="button" class="absolute right-4 top-4 text-zf-purple text-sm font-medium">获取验证码</button>
+                        </div>
+                        <div id="loginStatus" class="text-xs text-gray-500"></div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input type="checkbox" id="agree" required class="w-4 h-4 rounded border-gray-300 text-zf-purple focus:ring-zf-purple">
+                        <label for="agree" class="ml-2 text-xs text-gray-500 cursor-pointer">
+                            我已阅读并接受知否 <a href="#" class="text-zf-purple hover:underline">《用户协议》</a> 与 <a href="#" class="text-zf-purple hover:underline">《隐私政策》</a>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="w-full bg-zf-purple text-white py-4 rounded-full font-bold text-lg shadow-lg hover:bg-opacity-90 transition-all mt-4">登录</button>
+                </form>
+
+                <div class="mt-auto pt-10 flex justify-between text-sm text-gray-400">
+                    <a href="#">忘记密码?</a>
+                    <a href="{{ url_for('register') }}" class="text-gray-600 font-medium">注册新账号</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function switchTab(type) {
+            document.getElementById('pwd-fields').classList.toggle('hidden-form', type === 'sms');
+            document.getElementById('sms-fields').classList.toggle('hidden-form', type === 'pwd');
+            document.getElementById('sms-tab').className = type === 'sms' ? 'text-lg pb-1 active-tab' : 'text-lg pb-1 inactive-tab';
+            document.getElementById('pwd-tab').className = type === 'pwd' ? 'text-lg pb-1 active-tab' : 'text-lg pb-1 inactive-tab';
+        }
+
+        document.getElementById("loginSendBtn").addEventListener("click", async () => {
+            const phone = document.getElementById("loginPhone").value.trim();
+            const status = document.getElementById("loginStatus");
+            if (!phone) {
+                status.textContent = "请先填写手机号";
+                return;
+            }
+            status.textContent = "发送中...";
+            try {
+                const form = new URLSearchParams();
+                form.set("phone", phone);
+                form.set("purpose", "login");
+                const res = await fetch("/send-code", { method: "POST", body: form });
+                const data = await res.json();
+                if (data.ok) {
+                    status.textContent = `演示验证码：${data.code}（10分钟有效）`;
+                } else {
+                    status.textContent = data.message || "发送失败";
+                }
+            } catch (e) {
+                status.textContent = "发送失败，请检查服务";
+            }
+        });
+    </script>
+</body>
+</html>

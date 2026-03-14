@@ -1,0 +1,5 @@
+.DS_Store
+__pycache__/
+*.pyc
+academic_consult.db
+static_site/

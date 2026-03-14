@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>老师个人信息｜知否</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, Arial;
+            background: #f5f6f7;
+            color: #222;
+        }
+
+        .container {
+            width: 760px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        }
+
+        h1 {
+            margin: 0 0 16px;
+            font-size: 22px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 12px;
+            padding: 10px 0;
+            align-items: center;
+        }
+
+        .input {
+            width: 100%;
+            border: 1px solid #e1e5eb;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea.input {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .actions {
+            margin-top: 16px;
+            text-align: right;
+        }
+
+        .save-btn {
+            background: linear-gradient(90deg, #3fd29a, #2bb673);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #3dbb7f;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+{% include "_search_header.html" %}
+
+<div class="container">
+    <h1>老师个人信息 {% if teacher['is_verified'] %}<span class="badge">已认证</span>{% endif %}</h1>
+    <form method="post" action="/teacher-profile" enctype="multipart/form-data">
+        <div class="row"><span>姓名</span><input class="input" name="name" value="{{ teacher['name'] }}" required></div>
+        <div class="row"><span>学校</span><input class="input" name="school" value="{{ teacher['school'] }}" required></div>
+        <div class="row"><span>职称</span><input class="input" name="title" value="{{ teacher['title'] }}" required></div>
+        <div class="row"><span>研究方向</span><input class="input" name="major" value="{{ teacher['major'] }}" required></div>
+        <div class="row"><span>咨询价格</span><input class="input" name="price" value="{{ teacher['price'] }}" required></div>
+        <div class="row"><span>个人简介</span><textarea class="input" name="bio" placeholder="介绍你的研究方向与成果">{{ teacher['bio'] or '' }}</textarea></div>
+
+        <div class="row">
+            <span>头像</span>
+            <div>
+                <input type="file" name="avatar" accept="image/*">
+                {% if teacher['avatar_path'] %}
+                <div class="note">当前：{{ teacher['avatar_path'] }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <span>教师资格证</span>
+            <div>
+                <input type="file" name="cert1" accept="image/*,.pdf">
+                {% if teacher['cert1_path'] %}
+                <div class="note">已上传：{{ teacher['cert1_path'] }}</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <span>在职证明</span>
+            <div>
+                <input type="file" name="cert2" accept="image/*,.pdf">
+                {% if teacher['cert2_path'] %}
+                <div class="note">已上传：{{ teacher['cert2_path'] }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="actions"><button class="save-btn" type="submit">保存</button></div>
+    </form>
+</div>
+</body>
+</html>

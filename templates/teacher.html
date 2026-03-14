@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>老师详情｜问老师</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Arial;
+    background: #f5f6f7;
+    color: #333;
+}
+
+.container {
+    width: 900px;
+    margin: 30px auto 120px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 30px;
+}
+
+.teacher-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.teacher-info {
+    max-width: 650px;
+}
+
+.teacher-name {
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.teacher-title {
+    margin: 6px 0;
+    color: #666;
+}
+
+.teacher-desc {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.teacher-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.stat strong {
+    color: #ff9900;
+    font-size: 16px;
+}
+
+.teacher-avatar {
+    text-align: center;
+}
+
+.teacher-avatar img {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+}
+
+.follow-btn {
+    margin-top: 12px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #3dbb7f;
+    color: #3dbb7f;
+    background: #fff;
+}
+
+.section {
+    margin-top: 40px;
+}
+
+.section h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.tags {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: #f2f3f5;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+}
+
+.qa-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.qa-user {
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.qa-content {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.qa-meta {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #999;
+}
+
+.ask-bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(135deg, #3fd29a, #2bb673);
+    padding: 16px 0;
+}
+
+.ask-btn {
+    width: 300px;
+    margin: 0 auto;
+    background: #fff;
+    color: #2bb673;
+    border-radius: 28px;
+    text-align: center;
+    font-size: 16px;
+    padding: 12px 0;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+{% include "_search_header.html" %}
+
+<div class="container">
+    <div class="teacher-header">
+        <div class="teacher-info">
+            <div class="teacher-name">{{ teacher.name }}</div>
+            <div class="teacher-title">{{ teacher.title }}</div>
+            <div class="teacher-desc">{{ teacher.desc }}</div>
+
+            <div class="teacher-stats">
+                <div class="stat"><strong>{{ teacher.rating }}</strong> 评分</div>
+                <div class="stat"><strong>{{ teacher.answers }}</strong> 回答</div>
+                <div class="stat"><strong>{{ teacher.years }}年</strong> 从业</div>
+            </div>
+        </div>
+
+        <div class="teacher-avatar">
+            <img src="{{ url_for('static', filename=teacher.avatar) }}" alt="{{ teacher.name }}">
+            <div class="follow-btn">关注</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>擅长方向</h2>
+        <div class="tags">
+            {% for tag in teacher.tags %}<div class="tag">{{ tag }}</div>{% endfor %}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>过往回答</h2>
+        <div class="qa-item">
+            <div class="qa-user">我***子</div>
+            <div class="qa-content">请问责任型领导如何通过员工感恩影响不道德亲组织行为？</div>
+            <div class="qa-meta">2 天前 · 17 人看过</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-user">d***9</div>
+            <div class="qa-content">组织中高绩效—低道德状态是否一定导致道德脱离？</div>
+            <div class="qa-meta">昨天 · 20 人看过</div>
+        </div>
+    </div>
+</div>
+
+<div class="ask-bar">
+    <a href="{{ url_for('ask') }}?teacher={{ teacher.slug }}" style="text-decoration:none;">
+        <div class="ask-btn">向老师提问 ￥{{ teacher.price }}</div>
+    </a>
+</div>
+
+</body>
+</html>

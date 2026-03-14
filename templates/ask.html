@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>向老师提问</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Arial;
+    background: #f5f6f7;
+}
+
+.container {
+    width: 720px;
+    margin: 30px auto 120px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 30px;
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.tip {
+    color: #d33;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.firebase-status {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #2f9f6f;
+    min-height: 16px;
+}
+
+.textarea-box textarea {
+    width: 100%;
+    min-height: 140px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.upload-box {
+    margin-top: 20px;
+}
+
+.upload-square {
+    width: 120px;
+    height: 120px;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-square input {
+    display: none;
+}
+
+.upload-text {
+    font-size: 36px;
+    color: #999;
+}
+
+.preview-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.remove-btn {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    border: none;
+    background: rgba(0,0,0,.6);
+    color: #fff;
+    font-size: 14px;
+    line-height: 22px;
+    cursor: pointer;
+    display: none;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 16px 0;
+}
+
+.next-btn {
+    width: 320px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #3fd29a, #2bb673);
+    color: #fff;
+    text-align: center;
+    padding: 14px 0;
+    border-radius: 28px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    display: block;
+}
+</style>
+</head>
+
+<body>
+{% include "_search_header.html" %}
+
+<form id="askForm" method="post" action="{{ url_for('ask') }}" enctype="multipart/form-data">
+    <input type="hidden" name="teacher" value="{% if is_db_teacher %}zhang{% else %}{{ teacher.slug }}{% endif %}">
+    {% if teacher_id %}
+    <input type="hidden" name="teacher_id" value="{{ teacher_id }}">
+    {% endif %}
+
+    <div class="container">
+        <h1>向 {% if is_db_teacher %}{{ teacher['name'] }}{% else %}{{ teacher.name }}{% endif %} 教授 提问</h1>
+        {% if message %}<div class="tip">{{ message }}</div>{% endif %}
+
+        <div class="textarea-box">
+            <textarea id="questionInput" name="question" placeholder="请详细描述你的问题，越具体，老师回答越准确" required></textarea>
+        </div>
+
+        <div class="upload-box">
+            <label class="upload-square">
+                <input name="image" type="file" accept="image/*" onchange="previewImage(this)">
+                <span class="upload-text">+</span>
+                <img class="preview-img" alt="预览" />
+                <button type="button" class="remove-btn" onclick="removeImage(event)">×</button>
+            </label>
+        </div>
+        <div class="firebase-status" id="firebaseStatus"></div>
+    </div>
+
+    <div class="footer">
+        <button id="submitBtn" type="submit" class="next-btn">下一步</button>
+    </div>
+</form>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDCRhgtGU5GqSA6zGEUD-N0fUeUpr-ueXg",
+  authDomain: "knowable-54085.firebaseapp.com",
+  projectId: "knowable-54085",
+  storageBucket: "knowable-54085.firebasestorage.app",
+  messagingSenderId: "698669137535",
+  appId: "1:698669137535:web:4b97024d795385b3cb094a",
+  measurementId: "G-VFMJQQTDQH"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+const form = document.getElementById("askForm");
+const statusEl = document.getElementById("firebaseStatus");
+const submitBtn = document.getElementById("submitBtn");
+const fileInput = document.querySelector('input[name="image"]');
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const question = document.getElementById("questionInput").value.trim();
+  if (!question) {
+    statusEl.textContent = "请先输入提问内容。";
+    return;
+  }
+
+  submitBtn.disabled = true;
+  statusEl.textContent = "正在写入 Firestore...";
+
+  try {
+    let imageUrl = "";
+    let imageName = "";
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      imageName = file.name;
+      const path = `questions/${Date.now()}_${Math.random().toString(36).slice(2)}_${file.name}`;
+      const storageRef = ref(storage, path);
+      await uploadBytes(storageRef, file);
+      imageUrl = await getDownloadURL(storageRef);
+    }
+
+    await addDoc(collection(db, "questions"), {
+      question,
+      teacherSlug: "{% if is_db_teacher %}db-{{ teacher_id }}{% else %}{{ teacher.slug }}{% endif %}",
+      teacherName: "{% if is_db_teacher %}{{ teacher['name'] }}{% else %}{{ teacher.name }}{% endif %}",
+      imageUrl,
+      imageName,
+      createdAt: serverTimestamp()
+    });
+    statusEl.textContent = "已写入 Firestore，正在提交订单...";
+    form.submit();
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "写入失败，请检查 Firestore 规则或网络。";
+    submitBtn.disabled = false;
+  }
+});
+</script>
+
+<script>
+function previewImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const img = input.parentElement.querySelector('.preview-img');
+    const plus = input.parentElement.querySelector('.upload-text');
+    const removeBtn = input.parentElement.querySelector('.remove-btn');
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        img.src = e.target.result;
+        img.style.display = 'block';
+        plus.style.display = 'none';
+        removeBtn.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImage(evt) {
+    evt.preventDefault();
+    const label = evt.target.closest('.upload-square');
+    const input = label.querySelector('input[type=\"file\"]');
+    const img = label.querySelector('.preview-img');
+    const plus = label.querySelector('.upload-text');
+    const removeBtn = label.querySelector('.remove-btn');
+
+    input.value = '';
+    img.src = '';
+    img.style.display = 'none';
+    plus.style.display = 'block';
+    removeBtn.style.display = 'none';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>问老师｜聊天</title>
+
+<style>
+body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,Arial;
+    background:#f5f6f7;
+}
+
+.topbar{
+    height:60px;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    font-size:18px;
+    font-weight:600;
+    box-shadow:0 1px 5px rgba(0,0,0,.05);
+}
+
+.chat-box{
+    width:900px;
+    margin:20px auto 120px;
+}
+
+.msg{
+    display:flex;
+    margin-bottom:20px;
+}
+
+.msg.me{
+    flex-direction:row-reverse;
+}
+
+.avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+}
+
+.msg-content{
+    max-width:600px;
+    margin:0 12px;
+}
+
+.name{
+    font-size:12px;
+    color:#999;
+    margin-bottom:4px;
+}
+
+.bubble{
+    background:#fff;
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:14px;
+    line-height:1.6;
+    white-space: pre-line;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+
+.msg.me .bubble{
+    background:#3dbb7f;
+    color:#fff;
+}
+
+.input-bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#fff;
+    border-top:1px solid #eee;
+}
+
+.input-inner{
+    width:900px;
+    margin:auto;
+    display:flex;
+    padding:12px 0;
+}
+
+.input-inner input{
+    flex:1;
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    outline:none;
+}
+
+.send-btn{
+    margin-left:10px;
+    background:#3dbb7f;
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body class="{% if session.get('teacher_id') %}viewer-teacher{% else %}viewer-student{% endif %}">
+{% include "_search_header.html" %}
+
+<div class="topbar">学术助手</div>
+
+<div class="chat-box" id="chat">
+    {% if session.get('teacher_id') %}
+        {% if pre_summary %}
+        <div class="msg">
+            <img class="avatar" src="{{ url_for('static', filename='avatars/ai.png') }}" alt="AI">
+            <div class="msg-content">
+                <div class="name">知否AI助手 · 已整理信息</div>
+                <div class="bubble">{{ pre_summary }}</div>
+            </div>
+        </div>
+        {% else %}
+        <div class="msg">
+            <img class="avatar" src="{{ url_for('static', filename='avatars/ai.png') }}" alt="AI">
+            <div class="msg-content">
+                <div class="name">知否AI助手</div>
+                <div class="bubble">暂无学生补充信息，请先根据提问内容回复。</div>
+            </div>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="msg">
+            <img class="avatar" src="{{ url_for('static', filename='avatars/ai.png') }}" alt="AI">
+            <div class="msg-content">
+                <div class="name">知否AI助手</div>
+                <div class="bubble">你的咨询订单已支付成功（订单号：#{{ order.id }}）。为节约导师时间，我会先采集几个基础信息，再转交给 {{ teacher.name }} 教授。</div>
+            </div>
+        </div>
+        {% if pre_summary %}
+        <div class="msg">
+            <img class="avatar" src="{{ url_for('static', filename='avatars/ai.png') }}" alt="AI">
+            <div class="msg-content">
+                <div class="name">知否AI助手 · 已整理信息</div>
+                <div class="bubble">{{ pre_summary }}</div>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<div class="input-bar">
+    <div class="input-inner">
+        <input id="msgInput" placeholder="输入你的回答">
+        <button class="send-btn" onclick="sendMsg()">发送</button>
+    </div>
+</div>
+
+<script>
+const BASE_QUESTION = {{ order.question|tojson }};
+const ORDER_ID = {{ order.id }};
+const teacherName = {{ (teacher.name ~ " 教授")|tojson }};
+const viewerIsTeacher = document.body.classList.contains("viewer-teacher");
+let transferred = false;
+
+function addMessage(role, name, avatar, text) {
+    const chat = document.getElementById("chat");
+    const wrapper = document.createElement("div");
+    const isTeacherMsg = role === "teacher";
+    const isStudentMsg = role === "student";
+    const isMe = viewerIsTeacher ? isTeacherMsg : isStudentMsg;
+    wrapper.className = isMe ? "msg me" : "msg";
+
+    const img = document.createElement("img");
+    img.className = "avatar";
+    img.src = avatar;
+    img.alt = name;
+
+    const content = document.createElement("div");
+    content.className = "msg-content";
+
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "name";
+    nameDiv.textContent = name;
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+
+    content.appendChild(nameDiv);
+    content.appendChild(bubble);
+    wrapper.appendChild(img);
+    wrapper.appendChild(content);
+    chat.appendChild(wrapper);
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+function transferToTeacher(userText) {
+    const summary = `已整理信息如下：\n${userText}\n\n原始问题：${BASE_QUESTION}`;
+    addMessage("ai", "知否AI助手", "{{ url_for('static', filename='avatars/ai.png') }}", summary);
+    addMessage("ai", "知否AI助手", "{{ url_for('static', filename='avatars/ai.png') }}", "信息已整理完毕，正在转接导师，请稍候。");
+    transferred = true;
+    const form = new URLSearchParams();
+    form.set("order_id", ORDER_ID);
+    form.set("pre_info", userText);
+    form.set("pre_summary", summary);
+    fetch("/order-preinfo", { method: "POST", body: form }).catch(() => {});
+    setTimeout(() => {
+        addMessage(
+            "teacher",
+            teacherName,
+            "{{ url_for('static', filename=teacher.avatar) }}",
+            "我已收到你的问题与背景信息。基于你提供的研究方向和样本条件，我会先给你一个可执行的分析路径，再细化变量与模型设置。"
+        );
+    }, 1400);
+}
+
+function sendMsg(){
+    const input = document.getElementById("msgInput");
+    const text = input.value.trim();
+    if(!text) return;
+
+    const role = viewerIsTeacher ? "teacher" : "student";
+    const name = viewerIsTeacher ? teacherName : "我";
+    const avatar = viewerIsTeacher ? "{{ url_for('static', filename=teacher.avatar) }}" : "{{ url_for('static', filename='avatars/student.png') }}";
+    addMessage(role, name, avatar, text);
+
+    input.value = "";
+
+    if (!viewerIsTeacher && !transferred) {
+        setTimeout(() => transferToTeacher(text), 350);
+    }
+
+    const form = new URLSearchParams();
+    form.set("order_id", ORDER_ID);
+    form.set("role", role);
+    form.set("content", text);
+    fetch("/messages", { method: "POST", body: form }).catch(() => {});
+}
+
+document.getElementById("msgInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMsg();
+});
+
+async function loadHistory() {
+    const res = await fetch(`/messages?order_id=${ORDER_ID}`);
+    const data = await res.json();
+    if (!data.ok) return;
+    data.messages.forEach((m) => {
+        const role = m.role;
+        const name = role === "teacher" ? teacherName : "我";
+        const avatar = role === "teacher" ? "{{ url_for('static', filename=teacher.avatar) }}" : "{{ url_for('static', filename='avatars/student.png') }}";
+        addMessage(role, name, avatar, m.content);
+    });
+}
+
+loadHistory();
+
+if (!viewerIsTeacher) {
+    addMessage("ai", "知否AI助手", "{{ url_for('static', filename='avatars/ai.png') }}", `我先复述一下你的提问：${BASE_QUESTION}`);
+    addMessage(
+        "ai",
+        "知否AI助手",
+        "{{ url_for('static', filename='avatars/ai.png') }}",
+        "请一次性补充以下信息并发送（可按序号作答）：\n1. 学科专业\n2. 研究方向\n3. 当前阶段（开题/数据/分析/写作）\n4. 样本与方法（样本量、变量、模型）"
+    );
+}
+</script>
+
+</body>
+</html>

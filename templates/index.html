@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>知否｜专业学术咨询平台</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, Arial;
+            background: #f5f6f7;
+        }
+
+        .topbar {
+            height: 50px;
+            background: #fff;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.05);
+        }
+
+        .topbar a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .hero {
+            position: relative;
+            isolation: isolate;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            background: repeating-linear-gradient(
+                -28deg,
+                #ffffff 0 18px,
+                #efefef 18px 36px
+            );
+            padding: 90px 0 200px;
+            text-align: center;
+            margin-bottom: -80px;
+            border-bottom-left-radius: 120px;
+            border-bottom-right-radius: 120px;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            --stripe-shift: 140px;
+            background: linear-gradient(
+                -28deg,
+                transparent 0 calc(50% - 180px + var(--stripe-shift)),
+                rgba(52, 199, 89, .45) calc(50% - 180px + var(--stripe-shift)) calc(50% - 162px + var(--stripe-shift)),
+                transparent calc(50% - 162px + var(--stripe-shift)) calc(50% - 144px + var(--stripe-shift)),
+                rgba(255, 149, 0, .45) calc(50% - 144px + var(--stripe-shift)) calc(50% - 126px + var(--stripe-shift)),
+                transparent calc(50% - 126px + var(--stripe-shift)) calc(50% - 108px + var(--stripe-shift)),
+                rgba(255, 59, 48, .45) calc(50% - 108px + var(--stripe-shift)) calc(50% - 90px + var(--stripe-shift)),
+                transparent calc(50% - 90px + var(--stripe-shift)) calc(50% - 72px + var(--stripe-shift)),
+                rgba(175, 82, 222, .45) calc(50% - 72px + var(--stripe-shift)) calc(50% - 54px + var(--stripe-shift)),
+                transparent calc(50% - 54px + var(--stripe-shift)) calc(50% - 36px + var(--stripe-shift)),
+                rgba(0, 122, 255, .45) calc(50% - 36px + var(--stripe-shift)) calc(50% - 18px + var(--stripe-shift)),
+                transparent calc(50% - 18px + var(--stripe-shift)) 100%
+            );
+            filter: blur(1.8px) saturate(1.1);
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.12));
+        }
+
+        .hero h1,
+        .hero .search-box,
+        .hero .search-result {
+            position: relative;
+            z-index: 2;
+            pointer-events: auto;
+        }
+
+        .hero h1 {
+            color: #222;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            width: 800px;
+            margin: 0 auto;
+            display: flex;
+            background: rgba(255,255,255,.94);
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 16px 36px rgba(31, 78, 162, .22);
+            backdrop-filter: blur(4px);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 14px;
+            font-size: 14px;
+            outline: none;
+            background: transparent;
+            position: relative;
+            z-index: 3;
+        }
+
+        .search-box button {
+            width: 100px;
+            background: #3dbb7f;
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            position: relative;
+            z-index: 3;
+        }
+
+        .search-result {
+            width: 800px;
+            margin: 14px auto 0;
+            color: #444;
+            font-size: 14px;
+            text-align: left;
+        }
+
+
+        .entry {
+            width: 1100px;
+            margin: -40px auto 40px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .entry-item {
+            display: flex;
+            align-items: center;
+            text-align: left;
+            background: white;
+            padding: 24px 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.05);
+            cursor: pointer;
+        }
+
+        .entry-icon {
+            font-size: 32px;
+            margin-right: 16px;
+            line-height: 1;
+        }
+
+        .entry-text h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .entry-text p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .middle {
+            padding: 40px 0;
+        }
+
+        .middle-box {
+            width: 1020px;
+            margin: 0 auto;
+            display: flex;
+            gap: 60px;
+            background: white;
+            padding: 40px;
+            border-radius: 6px;
+        }
+
+        .middle-section {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .middle-section:hover {
+            background: #fafafa;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .section-icon {
+            font-size: 22px;
+            margin-right: 10px;
+        }
+
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            padding: 6px 14px;
+            background: #f2f3f5;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .tag:hover {
+            background: #3dbb7f;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(61,187,127,.25);
+        }
+
+        .tag.highlight {
+            background: #eaf6f1;
+            color: #2f9f6f;
+            font-weight: 500;
+        }
+
+        .teacher {
+            width: 1100px;
+            margin: 40px auto;
+        }
+
+        .teacher h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .teacher-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .teacher-card {
+            background: white;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,.05);
+        }
+
+        .teacher-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .teacher-card h4 {
+            margin: 5px 0;
+        }
+
+        .teacher-card p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .ask-btn {
+            margin-top: 18px;
+            padding: 8px 0;
+            width: 120px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 14px;
+            font-weight: 500;
+            color: #3dbb7f;
+            text-align: center;
+            border: 1px solid #3dbb7f;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .ask-btn:hover {
+            background: #3dbb7f;
+            color: white;
+        }
+
+        .search-list {
+            width: 1100px;
+            margin: 20px auto 0;
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px 22px;
+        }
+
+        .search-list ul {
+            margin: 8px 0 0;
+            padding-left: 20px;
+        }
+
+        .search-list li {
+            margin: 8px 0;
+        }
+
+        .search-list a {
+            color: #2f9f6f;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    {% if session.get('teacher_id') %}
+        <span>已登录：{{ session.get('teacher_name') or session.get('teacher_phone') }}</span>
+        <a href="/teacher-profile">个人信息</a>
+        <a href="/teacher-center">消息</a>
+        <a href="/logout">退出</a>
+    {% elif session.get('user_phone') %}
+        <span>已登录：{{ session.get('user_name') or session.get('user_phone') }}{% if session.get('user_major') %}（{{ session.get('user_major') }}）{% endif %}</span>
+        <a href="/my-questions">我的提问</a>
+        <a href="/profile">个人信息</a>
+        <a href="/logout">退出</a>
+    {% else %}
+        <a href="/login">👤 请登录</a>
+        <a href="/register">🎓 注册</a>
+    {% endif %}
+</div>
+
+<div class="hero">
+    <h1>知否</h1>
+    <form class="search-box" method="get" action="/">
+        <input name="q" value="{{ query }}" placeholder="搜索：理论 / 实验 / 老师 / 学院 / 论文">
+        <button type="submit">搜索</button>
+    </form>
+    {% if query %}
+    <div class="search-result">关键词：{{ query }}{% if not matched_teachers %}（暂无匹配老师）{% endif %}</div>
+    {% endif %}
+</div>
+
+<div class="entry">
+    <div class="entry-item" onclick="location.href='/ask-subject'">
+        <span class="entry-icon">🎓</span>
+        <div class="entry-text">
+            <h3>问老师</h3>
+            <p>高校教师在线解答</p>
+        </div>
+    </div>
+
+    <div class="entry-item" onclick="location.href='/feature/theory'"><span class="entry-icon">📚</span><div class="entry-text"><h3>查理论</h3><p>经典与前沿理论</p></div></div>
+    <div class="entry-item" onclick="location.href='/feature/experiment'"><span class="entry-icon">🧪</span><div class="entry-text"><h3>查实验</h3><p>实验设计与方法</p></div></div>
+    <div class="entry-item" onclick="location.href='/feature/school'"><span class="entry-icon">🏫</span><div class="entry-text"><h3>查学院</h3><p>院校与研究方向</p></div></div>
+    <div class="entry-item" onclick="location.href='/feature/paper'"><span class="entry-icon">📄</span><div class="entry-text"><h3>查论文</h3><p>论文结构与投稿</p></div></div>
+    <div class="entry-item" onclick="location.href='/feature/grammar'"><span class="entry-icon">✍️</span><div class="entry-text"><h3>查语法</h3><p>学术英语写作</p></div></div>
+    <div class="entry-item" onclick="location.href='/feature/guide'"><span class="entry-icon">🧭</span><div class="entry-text"><h3>论文指南</h3><p>科研避坑指南</p></div></div>
+    <div class="entry-item" onclick="location.href='/feature/video'"><span class="entry-icon">🎥</span><div class="entry-text"><h3>学术视频</h3><p>方法与经验分享</p></div></div>
+</div>
+
+{% if query and matched_teachers %}
+<div class="search-list">
+    搜索结果（老师）
+    <ul>
+    {% for teacher in matched_teachers %}
+        <li>
+            <a href="{{ url_for('teacher_detail', name=teacher.slug) }}">{{ teacher.name }}｜{{ teacher.school }}｜{{ teacher.major }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="middle">
+    <div class="middle-box">
+        <div class="middle-section">
+            <div class="section-header"><span class="section-icon">📊</span><h2>期刊分级</h2></div>
+            <div class="tag-group">
+                <a class="tag" href="{{ url_for('journals_page', slug='jcr-q1') }}">JCR Q1</a><a class="tag" href="{{ url_for('journals_page', slug='jcr-q2') }}">JCR Q2</a><a class="tag" href="{{ url_for('journals_page', slug='cas-1') }}">中科院1区</a><a class="tag" href="{{ url_for('journals_page', slug='cas-2') }}">中科院2区</a><a class="tag" href="{{ url_for('journals_page', slug='ssci') }}">SSCI来源期刊</a><a class="tag highlight" href="{{ url_for('journals_page', slug='cssci') }}">CSSCI来源期刊</a><a class="tag highlight" href="{{ url_for('journals_page', slug='pku-core') }}">北大核心期刊</a>
+            </div>
+        </div>
+        <div class="middle-section">
+            <div class="section-header"><span class="section-icon">📘</span><h2>学术手册</h2></div>
+            <div class="tag-group">
+                <span class="tag">开题报告</span><span class="tag">文献综述</span><span class="tag">研究设计</span><span class="tag">投稿流程</span><span class="tag">答辩准备</span><span class="tag highlight">审稿意见回复</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="teacher">
+    <h2>高校老师</h2>
+    <div class="teacher-list">
+        {% for teacher in featured_teachers %}
+        <div class="teacher-card">
+            <img src="{{ url_for('static', filename=teacher.avatar) }}" alt="{{ teacher.name }}">
+            <h4>{{ teacher.name }}</h4>
+            <p>{{ teacher.school }} · {{ teacher.major }}</p>
+            <div class="teacher-meta">✨ {{ teacher.rating }} ｜ {{ teacher.answers }} 月回答</div>
+            <a class="ask-btn" href="{{ url_for('teacher_detail', name=teacher.slug) }}">问老师 ¥{{ teacher.price }}</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div style="width:1100px;margin:30px auto;color:#666;font-size:13px;display:flex;gap:16px;">
+    <a href="/metrics" style="text-decoration:none;color:#2f9f6f;">关键指标</a>
+    <a href="/rules" style="text-decoration:none;color:#2f9f6f;">平台规则</a>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+  import { getFirestore, addDoc, collection, serverTimestamp, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDCRhgtGU5GqSA6zGEUD-N0fUeUpr-ueXg",
+    authDomain: "knowable-54085.firebaseapp.com",
+    projectId: "knowable-54085",
+    storageBucket: "knowable-54085.firebasestorage.app",
+    messagingSenderId: "698669137535",
+    appId: "1:698669137535:web:4b97024d795385b3cb094a",
+    measurementId: "G-VFMJQQTDQH"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.firebaseApp = app;
+  window.firebaseDb = db;
+
+</script>
+
+</body>
+</html>

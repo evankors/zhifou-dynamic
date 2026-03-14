@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>平台规则｜知否</title>
+    <style>
+        :root {
+            --ink: #0f172a;
+            --muted: #64748b;
+            --card: #ffffff;
+            --bg: #f6f8fb;
+            --accent: #16a34a;
+        }
+        body {
+            margin: 0;
+            font-family: "IBM Plex Sans", "Avenir Next", "Helvetica Neue", sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+        }
+        .page {
+            width: 1020px;
+            margin: 36px auto 64px;
+        }
+        .hero {
+            background: linear-gradient(120deg, #e6f4ee, #f3f6ff);
+            border: 1px solid #e6edf5;
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+        }
+        h1 { margin: 0 0 6px; font-size: 24px; }
+        .subtitle { color: var(--muted); font-size: 13px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #eef2f7;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+        }
+        .card h2 { margin: 0 0 10px; font-size: 16px; }
+        ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+        .badge { display: inline-block; background: #ecfdf3; color: #15803d; font-size: 12px; padding: 2px 8px; border-radius: 999px; margin-left: 6px; }
+    </style>
+</head>
+<body>
+{% include "_search_header.html" %}
+<div class="page">
+    <div class="hero">
+        <h1>平台规则与服务承诺</h1>
+        <div class="subtitle">用于比赛展示，可按实际业务调整</div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>老师审核<span class="badge">必审</span></h2>
+            <ul>
+                <li>老师需提交真实身份与在职信息</li>
+                <li>提交资质证明后进入审核队列</li>
+                <li>审核通过后才会展示在专业列表</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h2>服务承诺</h2>
+            <ul>
+                <li>预计 3 小时内回复，超过 24 小时可自动退款</li>
+                <li>连续超时将降低曝光</li>
+                <li>高质量回答会提高推荐权重</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h2>内容规范</h2>
+            <ul>
+                <li>禁止代写、代投等违规行为</li>
+                <li>禁止传播违法/学术不端内容</li>
+                <li>平台保留对违规账号的处理权</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h2>交易与退款</h2>
+            <ul>
+                <li>支付成功后进入咨询对话</li>
+                <li>老师超时未回复自动退款</li>
+                <li>恶意退款将影响账号信用</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h2>隐私与数据</h2>
+            <ul>
+                <li>手机号仅用于账号验证</li>
+                <li>聊天内容用于服务质量提升</li>
+                <li>数据可按请求删除或导出</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h2>信用机制</h2>
+            <ul>
+                <li>老师评分与响应时长共同影响排名</li>
+                <li>学生取消率过高将触发风控提示</li>
+                <li>优质回答可获得平台认证标识</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
