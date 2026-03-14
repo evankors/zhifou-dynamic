@@ -339,11 +339,18 @@
                 width: 100%;
             }
 
+            .search-result {
+                width: 100%;
+            }
+
             .entry,
             .middle,
             .teacher,
             .search-list {
-                width: min(1100px, 92vw);
+                width: 100%;
+                padding-left: 16px;
+                padding-right: 16px;
+                box-sizing: border-box;
             }
 
             .teacher-list {
@@ -352,6 +359,7 @@
 
             .entry {
                 grid-template-columns: repeat(2, 1fr);
+                margin: -40px auto 24px;
             }
 
             .middle {
@@ -361,6 +369,13 @@
             .middle-box {
                 width: 100%;
                 border-radius: 12px;
+                padding: 24px;
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .teacher {
+                margin: 24px auto;
             }
         }
 
