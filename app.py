@@ -285,6 +285,17 @@ def db_execute(conn, sql, params=()):
     return cur
 
 
+def db_insert_and_get_id(conn, sql, params=()):
+    if USE_POSTGRES:
+        if "RETURNING id" not in sql.upper():
+            sql = f"{sql} RETURNING id"
+        cur = db_execute(conn, sql, params)
+        row = cur.fetchone()
+        return row["id"] if row else None
+    cur = db_execute(conn, sql, params)
+    return cur.lastrowid
+
+
 def init_db() -> None:
     conn = get_conn()
     if USE_POSTGRES:
@@ -1142,7 +1153,7 @@ def ask():
 
         teacher = get_teacher(teacher_slug)
         conn = get_conn()
-        cursor = db_execute(conn, 
+        order_id = db_insert_and_get_id(conn, 
             """
             INSERT INTO orders (user_id, teacher_id, teacher_slug, question, image_name, created_at)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -1156,7 +1167,6 @@ def ask():
                 datetime.now().isoformat(),
             ),
         )
-        order_id = cursor.lastrowid
         conn.commit()
         conn.close()
         return redirect(url_for("pay", order_id=order_id))
