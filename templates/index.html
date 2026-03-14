@@ -268,6 +268,8 @@
             height: 80px;
             border-radius: 50%;
             margin-bottom: 10px;
+            object-fit: cover;
+            background: #e9ecef;
         }
 
         .teacher-card h4 {
@@ -322,6 +324,52 @@
         .search-list a {
             color: #2f9f6f;
             text-decoration: none;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                padding: 60px 16px 160px;
+                border-bottom-left-radius: 60px;
+                border-bottom-right-radius: 60px;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .entry,
+            .middle,
+            .teacher,
+            .search-list {
+                width: min(1100px, 92vw);
+            }
+
+            .teacher-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .entry {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .middle {
+                padding: 0 0 20px;
+            }
+
+            .middle-box {
+                width: 100%;
+                border-radius: 12px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .teacher-list {
+                grid-template-columns: 1fr;
+            }
+
+            .entry {
+                grid-template-columns: 1fr;
+            }
         }
 
     </style>
@@ -409,7 +457,7 @@
     <div class="teacher-list">
         {% for teacher in featured_teachers %}
         <div class="teacher-card">
-            <img src="{{ url_for('static', filename=teacher.avatar) }}" alt="{{ teacher.name }}">
+            <img src="{{ url_for('static', filename=teacher.avatar) }}" alt="{{ teacher.name }}" loading="lazy" decoding="async" width="80" height="80">
             <h4>{{ teacher.name }}</h4>
             <p>{{ teacher.school }} · {{ teacher.major }}</p>
             <div class="teacher-meta">✨ {{ teacher.rating }} ｜ {{ teacher.answers }} 月回答</div>
