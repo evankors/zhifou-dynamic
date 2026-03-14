@@ -43,12 +43,7 @@
         }
 
         .avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-right: 20px;
-            object-fit: cover;
-            background: #ddd;
+            display: none;
         }
 
         .teacher-info {
@@ -134,12 +129,7 @@
         {% endif %}
         {% for teacher in teachers %}
             <div class="teacher-item">
-            <div style="position:relative;">
-                <img class="avatar" src="{{ url_for('static', filename=teacher['avatar_path'] or 'avatars/teacher.png') }}" alt="{{ teacher.name }}">
-                {% if teacher['is_verified'] %}
-                <span style="position:absolute;right:-4px;bottom:-4px;background:#3dbb7f;color:#fff;width:18px;height:18px;border-radius:9px;font-size:11px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;">V</span>
-                {% endif %}
-            </div>
+        <div style="position:relative;"></div>
 
             <div class="teacher-info">
                 <div class="teacher-name">{{ teacher.name }}</div>
